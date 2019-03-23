@@ -98,7 +98,7 @@ The final result is the same for all three attempts. Processing time varies.
 |   #2    | Inverted index |                 5965 |
 |   #3    | reduceByKey    |                 2847 |
 
-Best performer is attempt #3 with reduceByKey option.
+Best performer is attempted #3 with reduceByKey option.
 
 # Full output
 
