@@ -12,7 +12,7 @@ logo: "logo-hes-so.jpg"
 
 # Attempt #1 : naive ranking
 
-## List of language ranked using naive ranking
+## List of languages ranked using naive ranking
 
 | Rank |  Language   | Number of article |
 | ---: | :---------: | ----------------: |
@@ -38,7 +38,7 @@ Processing Part 1: naive ranking took **32125 ms**.
 
 # Attempt #2 : ranking using inverted index
 
-## List of language ranked using inverted index
+## List of languages ranked using inverted index
 
 | Rank |  Language   | Number of article |
 | ---: | :---------: | ----------------: |
@@ -64,7 +64,7 @@ Processing Part 2: ranking using inverted index took **5965 ms**.
 
 # Attempt #3 : ranking using reduceByKey
 
-## List of language ranked using reduceByKey
+## List of languages ranked using reduceByKey
 
 | Rank |  Language   | Number of article |
 | ---: | :---------: | ----------------: |
