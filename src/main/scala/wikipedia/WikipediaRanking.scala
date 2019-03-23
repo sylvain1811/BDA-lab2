@@ -46,7 +46,9 @@ object WikipediaRanking {
   /** Compute an inverted index of the set of articles, mapping each language
     * to the Wikipedia pages in which it occurs.
     */
-  def makeIndex(langs: List[String], rdd: RDD[WikipediaArticle]): RDD[(String, Iterable[WikipediaArticle])] = ???
+  def makeIndex(langs: List[String], rdd: RDD[WikipediaArticle]): RDD[(String, Iterable[WikipediaArticle])] = {
+    rdd.flatMap((article: WikipediaArticle) => langs.filter((l: String) => article.text.contains(l)).map((l: String) => (l, article))).groupByKey()
+  }
 
   /** (2) Compute the language ranking again, but now using the inverted index. Can you notice
     * a performance improvement?
@@ -73,6 +75,8 @@ object WikipediaRanking {
 
     /* An inverted index mapping languages to wikipedia pages on which they appear */
     def index: RDD[(String, Iterable[WikipediaArticle])] = makeIndex(langs, wikiRdd)
+
+    // index.foreach((t: (String, Iterable[WikipediaArticle])) => println(t._1 + s"[${t._2.take(3).map(_.title + " ;; ")}]"))
 
     /* Languages ranked according to (2), using the inverted index */
     val langsRanked2: List[(String, Int)] = timed("Part 2: ranking using inverted index", rankLangsUsingIndex(index))
