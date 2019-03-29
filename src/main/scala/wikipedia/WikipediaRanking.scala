@@ -6,7 +6,11 @@ import org.apache.spark.rdd.RDD
 import org.apache.log4j.Logger
 import org.apache.log4j.Level
 
-case class WikipediaArticle(title: String, text: String)
+case class WikipediaArticle(title: String, text: String) {
+  def containsLang(lang: String): Boolean = {
+    this.text.split("[?,!. ]+").map(_.toLowerCase).contains(lang.toLowerCase)
+  }
+}
 
 object WikipediaRanking {
 
@@ -21,6 +25,7 @@ object WikipediaRanking {
   val sc: SparkContext = new SparkContext(conf)
   val wikiRdd: RDD[WikipediaArticle] = sc.parallelize(WikipediaData.articles)
 
+
   /** Returns the number of articles on which the language `lang` occurs.
     * Hint1: consider using method `aggregate` on RDD[T].
     * Hint2: should you count the "Java" language when you see "JavaScript"?
@@ -28,7 +33,7 @@ object WikipediaRanking {
     * Hint4: no need to search in the title :)
     */
   def occurrencesOfLang(lang: String, rdd: RDD[WikipediaArticle]): Int = {
-    rdd.aggregate(0)((acc: Int, wa: WikipediaArticle) => if (wa.text.contains(lang)) acc + 1 else acc, _ + _)
+    rdd.aggregate(0)((acc: Int, wa: WikipediaArticle) => if (wa.containsLang(lang)) acc + 1 else acc, _ + _)
   }
 
   /** (1) Use `occurrencesOfLang` to compute the ranking of the languages
@@ -40,15 +45,15 @@ object WikipediaRanking {
     * several seconds.
     */
   def rankLangs(langs: List[String], rdd: RDD[WikipediaArticle]): List[(String, Int)] = {
-    langs.map((l: String) => (l, occurrencesOfLang(l, rdd))).sortBy(-_._2)
+    langs.map((lang: String) => (lang, occurrencesOfLang(lang, rdd))).sortBy(-_._2)
   }
 
   /** Compute an inverted index of the set of articles, mapping each language
     * to the Wikipedia pages in which it occurs.
     */
   def makeIndex(langs: List[String], rdd: RDD[WikipediaArticle]): RDD[(String, Iterable[WikipediaArticle])] = {
-    rdd.flatMap((article: WikipediaArticle) => {
-      langs.filter((l: String) => article.text.contains(l)).map((l: String) => (l, article))
+    rdd.flatMap((wa: WikipediaArticle) => {
+      langs.filter((lang: String) => wa.containsLang(lang)).map((l: String) => (l, wa))
     }).groupByKey()
   }
 
@@ -70,8 +75,8 @@ object WikipediaRanking {
     * several seconds.
     */
   def rankLangsReduceByKey(langs: List[String], rdd: RDD[WikipediaArticle]): List[(String, Int)] = {
-    rdd.flatMap((article: WikipediaArticle) => {
-      langs.filter((l: String) => article.text.contains(l)).map((l: String) => (l, 1))
+    rdd.flatMap((wa: WikipediaArticle) => {
+      langs.filter((lang: String) => wa.containsLang(lang)).map((lang: String) => (lang, 1))
     }).reduceByKey(_ + _).sortBy(-_._2).collect.toList
   }
 

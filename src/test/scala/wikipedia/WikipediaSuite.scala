@@ -43,10 +43,10 @@ class WikipediaSuite extends FunSuite with BeforeAndAfterAll {
   test("'makeIndex' creates a simple index with two entries") {
     val langs = List("Scala", "Java")
     val articles = List(
-        WikipediaArticle("1","Groovy is pretty interesting, and so is Erlang"),
-        WikipediaArticle("2","Scala and Java run on the JVM"),
-        WikipediaArticle("3","Scala is not purely functional")
-      )
+      WikipediaArticle("1", "Groovy is pretty interesting, and so is Erlang"),
+      WikipediaArticle("2", "Scala and Java run on the JVM"),
+      WikipediaArticle("3", "Scala is not purely functional")
+    )
     val rdd = sc.parallelize(articles)
     val index = makeIndex(langs, rdd)
     assert(index.count() == 2)
@@ -55,10 +55,10 @@ class WikipediaSuite extends FunSuite with BeforeAndAfterAll {
   test("'rankLangsUsingIndex' should work for a simple RDD with three elements") {
     val langs = List("Scala", "Java")
     val articles = List(
-        WikipediaArticle("1","Groovy is pretty interesting, and so is Erlang"),
-        WikipediaArticle("2","Scala and Java run on the JVM"),
-        WikipediaArticle("3","Scala is not purely functional")
-      )
+      WikipediaArticle("1", "Groovy is pretty interesting, and so is Erlang"),
+      WikipediaArticle("2", "Scala and Java run on the JVM"),
+      WikipediaArticle("3", "Scala is not purely functional")
+    )
     val rdd = sc.parallelize(articles)
     val index = makeIndex(langs, rdd)
     val ranked = rankLangsUsingIndex(index)
@@ -68,12 +68,12 @@ class WikipediaSuite extends FunSuite with BeforeAndAfterAll {
   test("'rankLangsReduceByKey' should work for a simple RDD with four elements") {
     val langs = List("Scala", "Java", "Groovy", "Haskell", "Erlang")
     val articles = List(
-        WikipediaArticle("1","Groovy is pretty interesting, and so is Erlang"),
-        WikipediaArticle("2","Scala and Java run on the JVM"),
-        WikipediaArticle("3","Scala is not purely functional"),
-        WikipediaArticle("4","The cool kids like Haskell more than Java"),
-        WikipediaArticle("5","Java is for enterprise developers")
-      )
+      WikipediaArticle("1", "Groovy is pretty interesting, and so is Erlang"),
+      WikipediaArticle("2", "Scala and Java run on the JVM"),
+      WikipediaArticle("3", "Scala is not purely functional"),
+      WikipediaArticle("4", "The cool kids like Haskell more than Java"),
+      WikipediaArticle("5", "Java is for enterprise developers")
+    )
     val rdd = sc.parallelize(articles)
     val ranked = rankLangsReduceByKey(langs, rdd)
     assert(ranked.head._1 == "Java")
