@@ -5,108 +5,113 @@ subtitle: Big Data Analysis
 author: [Quentin Vaucher, André Neto da Silva, Sylvain Renaud]
 date: \today
 toc: true
+toc-own-page: true
 logo: "logo-hes-so.jpg"
+logo-width: 200
 ---
 
-# Introduction
+# Raw results
 
-# Attempt #1 : naive ranking
+The list of retrieved languages is the same independently from the method
+which is used. This ascertainment seems logic since each attempt tries to
+compute the same result changing only the way the computations are done.
 
-## List of languages ranked using naive ranking
+The following table presents the result obtained, regardless of the attempt.
 
-| Rank |  Language   | Number of article |
-| ---: | :---------: | ----------------: |
-|    1 |    Java     |              2017 |
-|    2 | JavaScript  |              1738 |
-|    3 |     C#      |               850 |
-|    4 |     CSS     |               554 |
-|    5 |     C++     |               555 |
-|    6 |   Python    |               545 |
-|    7 |     PHP     |               452 |
-|    8 |   MATLAB    |               324 |
-|    9 |    Perl     |               300 |
-|   10 |    Ruby     |               287 |
-|   11 |    Scala    |               161 |
-|   12 |   Haskell   |               128 |
-|   13 | Objective-C |               112 |
-|   14 |   Clojure   |                60 |
-|   15 |   Groovy    |                55 |
+| Rank |  Language   | # articles |
+| ---: | :---------: | ---------: |
+|    1 | JavaScript  |       1704 |
+|    2 |     C#      |        731 |
+|    3 |    Java     |        700 |
+|    4 |     CSS     |        430 |
+|    5 |   Python    |        409 |
+|    6 |     C++     |        384 |
+|    7 |     PHP     |        333 |
+|    8 |   MATLAB    |        296 |
+|    9 |    Perl     |        176 |
+|   10 |    Ruby     |        161 |
+|   11 |   Haskell   |         65 |
+|   12 | Objective-C |         62 |
+|   13 |    Scala    |         53 |
+|   14 |   Clojure   |         29 |
+|   15 |   Groovy    |         29 |
 
-## Processing time using naive ranking
+Table: List of languages ranked by number of articles
 
-Processing Part 1: naive ranking took **32125 ms**.
+\newpage
 
-# Attempt #2 : ranking using inverted index
+The analysis becomes more interesting when it targets the time of
+computations. Here are the comparison of the three different attempts:
 
-## List of languages ranked using inverted index
+|  Attempt name  | Time [s] |
+| :------------: | :------: |
+|     Naive      |  81121   |
+| Inverted index |   9463   |
+| Reduce by key  |   6359   |
 
-| Rank |  Language   | Number of article |
-| ---: | :---------: | ----------------: |
-|    1 |    Java     |              2017 |
-|    2 | JavaScript  |              1738 |
-|    3 |     C#      |               850 |
-|    4 |     CSS     |               554 |
-|    5 |     C++     |               555 |
-|    6 |   Python    |               545 |
-|    7 |     PHP     |               452 |
-|    8 |   MATLAB    |               324 |
-|    9 |    Perl     |               300 |
-|   10 |    Ruby     |               287 |
-|   11 |    Scala    |               161 |
-|   12 |   Haskell   |               128 |
-|   13 | Objective-C |               112 |
-|   14 |   Clojure   |                60 |
-|   15 |   Groovy    |                55 |
+# Interpretations
 
-## Processing time using inverted index
+Let's try to understand these results one by one, beginning by the naive
+implementation.
 
-Processing Part 2: ranking using inverted index took **5965 ms**.
+## Naive
 
-# Attempt #3 : ranking using reduceByKey
+For each language, the code go through the entire RDD and count
+the number of articles containing its name. Therefore the computations are the
+followings:
 
-## List of languages ranked using reduceByKey
+$$N * M$$
 
-| Rank |  Language   | Number of article |
-| ---: | :---------: | ----------------: |
-|    1 |    Java     |              2017 |
-|    2 | JavaScript  |              1738 |
-|    3 |     C#      |               850 |
-|    4 |     CSS     |               554 |
-|    5 |     C++     |               555 |
-|    6 |   Python    |               545 |
-|    7 |     PHP     |               452 |
-|    8 |   MATLAB    |               324 |
-|    9 |    Perl     |               300 |
-|   10 |    Ruby     |               287 |
-|   11 |    Scala    |               161 |
-|   12 |   Haskell   |               128 |
-|   13 | Objective-C |               112 |
-|   14 |   Clojure   |                60 |
-|   15 |   Groovy    |                55 |
+where:
 
-## Processing time using reduceByKey
+- $N$ is the number of languages
+- $M$ is the size of the RDD
 
-Processing Part 3: ranking using reduceByKey took **2847 ms**.
+## Inverted index
 
-# Comparison
+For each language, the code has to calculate the size of its inverted index.
+Therefore, the computations are the followings:
 
-The final result is the same for all three attempts. Processing time varies.
+$$\sum_{i=0}^{N} size\ of\ inverted\ index\ i$$
 
-| Attempt | Method         | Processing time (ms) |
-| :-----: | -------------- | -------------------: |
-|   #1    | Naive          |                32125 |
-|   #2    | Inverted index |                 5965 |
-|   #3    | reduceByKey    |                 2847 |
+where:
 
-Best performer is attempted #3 with reduceByKey option.
+- $N$ is the number of Languages
 
-# Full output
+Compared to the naive implementation, we don't have to go through the entire
+RDD, and don't ever bother to check which article contains which language
+because this information is already known.
 
-```text
-List((Java,2017), (JavaScript,1738), (C#,850), (CSS,555), (C++,554), (Python,545), (PHP,452), (MATLAB,324), (Perl,300), (Ruby,287), (Scala,161), (Haskell,128), (Objective-C,112), (Clojure,60), (Groovy,55))
-List((Java,2017), (JavaScript,1738), (C#,850), (CSS,555), (C++,554), (Python,545), (PHP,452), (MATLAB,324), (Perl,300), (Ruby,287), (Scala,161), (Haskell,128), (Objective-C,112), (Clojure,60), (Groovy,55))
-List((Java,2017), (JavaScript,1738), (C#,850), (CSS,555), (C++,554), (Python,545), (PHP,452), (MATLAB,324), (Perl,300), (Ruby,287), (Scala,161), (Haskell,128), (Objective-C,112), (Clojure,60), (Groovy,55))
-Processing Part 1: naive ranking took 32125 ms.
-Processing Part 2: ranking using inverted index took 5965 ms.
-Processing Part 3: ranking using reduceByKey took 2847 ms.
-```
+## Reduce by key
+
+TODO...
+
+# Wikipedia-based VS RedMonk rankings
+
+Finally, let's see how close is this Wikipedia-based ranking to the
+popular RedMonk ranking. The list which was given in the Lab has been slightly
+modified in order to match the one given here: [RedMonk ranking - June 2018](https://redmonk.com/sogrady/2018/08/10/language-rankings-6-18/). Because the list has been "pre-filtered" to match the RedMonk one, only the order relationship is relevant here.
+
+| Rank  | Wikipedia-based |   RedMonk   |
+| :---: | :-------------: | :---------: |
+|   1   |        C        | JavaScript  |
+|   2   |        R        |    Java     |
+|   3   |      Java       |   Python    |
+|   4   |   JavaScript    |     PHP     |
+|   5   |       Go        |     C#      |
+|   6   |       C#        |     C++     |
+|   7   |       CSS       |     CSS     |
+|   8   |       C++       |    Ruby     |
+|   9   |     Python      |      C      |
+|  10   |       PHP       | Objective-C |
+|  11   |      Ruby       |    Swift    |
+|  12   |      Scala      |    Scala    |
+|  13   |      Shell      |    Shell    |
+|  14   |   Objective-C   |     Go      |
+|  15   |      Swift      |      R      |
+
+- CSS, Scala and Shell are ranked in the same way
+- Java, C# and C++ are one or two rank away from the RedMonk ranking
+
+Even tough the ranking is note exactly the same, the general idea seems to
+match pretty well the RedMonk rank.
