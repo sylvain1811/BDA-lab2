@@ -84,34 +84,13 @@ because this information is already known.
 
 ## Reduce by key
 
-TODO...
+Same idea than the inverted index, except that we do all the computations in "once".
+The performance are slightly better than the inverted index.
 
-# Wikipedia-based VS RedMonk rankings
+It seems that the ```reduceByKey``` method is more optimized by _Spark_ than computing an
+inverted index by hand, hence the lower computation time...
 
-Finally, let's see how close is this Wikipedia-based ranking to the
-popular RedMonk ranking. The list which was given in the Lab has been slightly
-modified in order to match the one given here: [RedMonk ranking - June 2018](https://redmonk.com/sogrady/2018/08/10/language-rankings-6-18/). Because the list has been "pre-filtered" to match the RedMonk one, only the order relationship is relevant here.
 
-| Rank  | Wikipedia-based |   RedMonk   |
-| :---: | :-------------: | :---------: |
-|   1   |        C        | JavaScript  |
-|   2   |        R        |    Java     |
-|   3   |      Java       |   Python    |
-|   4   |   JavaScript    |     PHP     |
-|   5   |       Go        |     C#      |
-|   6   |       C#        |     C++     |
-|   7   |       CSS       |     CSS     |
-|   8   |       C++       |    Ruby     |
-|   9   |     Python      |      C      |
-|  10   |       PHP       | Objective-C |
-|  11   |      Ruby       |    Swift    |
-|  12   |      Scala      |    Scala    |
-|  13   |      Shell      |    Shell    |
-|  14   |   Objective-C   |     Go      |
-|  15   |      Swift      |      R      |
 
-- CSS, Scala and Shell are ranked in the same way
-- Java, C# and C++ are one or two rank away from the RedMonk ranking
 
-Even tough the ranking is note exactly the same, the general idea seems to
-match pretty well the RedMonk rank.
+
